@@ -18,8 +18,8 @@ app.use(function(req, res, next) {
 
 // Body Parser
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 // Importar rutas
@@ -31,6 +31,8 @@ var medicoRoutes = require('./routes/medico');
 var busquedaRoutes = require('./routes/busqueda');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
+var articlesRoutes = require('./routes/article');
+
 
 
 // Conexión a la base de datos
@@ -57,6 +59,7 @@ app.use('/login', loginRoutes);
 app.use('/busqueda', busquedaRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/img', imagenesRoutes);
+app.use('/article', articlesRoutes);
 
 app.use('/', appRoutes);
 
