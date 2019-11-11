@@ -10,15 +10,15 @@ var Usuario = require('../models/usuario');
 // ==============================
 // Busqueda por colección
 // ==============================
-app.get('/coleccion/:tabla/:busqueda', (req, res) => {
+app.get('/collection/:table/:busqueda', (req, res) => {
 
     var busqueda = req.params.busqueda;
-    var tabla = req.params.tabla;
+    var table = req.params.table;
     var regex = new RegExp(busqueda, 'i');
 
     var promesa;
 
-    switch (tabla) {
+    switch (table) {
 
         case 'usuarios':
             promesa = buscarUsuarios(busqueda, regex);
@@ -32,11 +32,15 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
             promesa = buscarHospitales(busqueda, regex);
             break;
 
+        case 'articles':
+            promesa = searchArticles(busqueda, regex);
+            break;
+
         default:
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Los tipos de busqueda sólo son: usuarios, medicos y hospitales',
-                error: { message: 'Tipo de tabla/coleccion no válido' }
+                mensaje: 'Los tipos de busqueda sólo son: usuarios y articulos',
+                error: { message: 'Tipo de tabla/coleccion no válida' }
             });
 
     }
@@ -45,7 +49,7 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
 
         res.status(200).json({
             ok: true,
-            [tabla]: data
+            [table]: data
         });
 
     })
@@ -56,18 +60,18 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
 // ==============================
 // Busqueda general
 // ==============================
-app.get('/todo/:busqueda', (req, res, next) => {
+app.get('/all/:busqueda', (req, res, next) => {
 
     var busqueda = req.params.busqueda;
     var regex = new RegExp(busqueda, 'i');
 
 
     Promise.all([
-            //buscarHospitales(busqueda, regex),
-            //buscarMedicos(busqueda, regex),
-            searchUsuarios(busqueda, regex),
-            searchArticles(busqueda, regex)
-        ])
+        //buscarHospitales(busqueda, regex),
+        //buscarMedicos(busqueda, regex),
+        searchUsuarios(busqueda, regex),
+        searchArticles(busqueda, regex)
+    ])
         .then(respuestas => {
 
             res.status(200).json({
@@ -83,7 +87,7 @@ app.get('/todo/:busqueda', (req, res, next) => {
 });
 
 
-function buscarHospitales(busqueda, regex) {
+/* function buscarHospitales(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
 
@@ -98,9 +102,9 @@ function buscarHospitales(busqueda, regex) {
                 }
             });
     });
-}
+} */
 
-function buscarMedicos(busqueda, regex) {
+/* function buscarMedicos(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
 
@@ -117,7 +121,7 @@ function buscarMedicos(busqueda, regex) {
             });
     });
 }
-
+ */
 function searchUsuarios(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
@@ -139,24 +143,30 @@ function searchUsuarios(busqueda, regex) {
     });
 }
 
-    function searchArticles(busqueda, regex) {
+function searchArticles(busqueda, regex) {
+    console.log(busqueda);
 
-        return new Promise((resolve, reject) => {
-    
-            Article.find({}, 'Name Description PartNumber SerialNumber Status')
-                .exec((err, articles) => {
-    
-                    if (err) {
-                        reject('Error al cargar articulos', err);
-                    } else {
-                        resolve(articles);
-                    }
-    
-    
-                })
-    
-    
-        });    
+    return new Promise((resolve, reject) => {
+
+        Article.find({}, 'Name Description PartNumber SerialNumber Status')
+            .or([{ 'Name': regex },
+            { 'Description': regex },
+            { 'PartNumber': regex },
+            { 'SerialNumber': regex },
+            { 'Status': regex }])
+            .exec((err, articles) => {
+
+                if (err) {
+                    reject('Error al cargar articulos', err);
+                } else {
+                    resolve(articles);
+                }
+
+
+            })
+
+
+    });
 }
 
 
