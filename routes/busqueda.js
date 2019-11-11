@@ -4,6 +4,7 @@ var app = express();
 
 var Hospital = require('../models/hospital');
 var Medico = require('../models/medico');
+var Article = require('../models/articles');
 var Usuario = require('../models/usuario');
 
 // ==============================
@@ -62,17 +63,19 @@ app.get('/todo/:busqueda', (req, res, next) => {
 
 
     Promise.all([
-            buscarHospitales(busqueda, regex),
-            buscarMedicos(busqueda, regex),
-            buscarUsuarios(busqueda, regex)
+            //buscarHospitales(busqueda, regex),
+            //buscarMedicos(busqueda, regex),
+            searchUsuarios(busqueda, regex),
+            searchArticles(busqueda, regex)
         ])
         .then(respuestas => {
 
             res.status(200).json({
                 ok: true,
-                hospitales: respuestas[0],
-                medicos: respuestas[1],
-                usuarios: respuestas[2]
+                //hospitales: respuestas[0],
+                //medicos: respuestas[1],
+                usuarios: respuestas[0],
+                articles: respuestas[1]
             });
         })
 
@@ -115,7 +118,7 @@ function buscarMedicos(busqueda, regex) {
     });
 }
 
-function buscarUsuarios(busqueda, regex) {
+function searchUsuarios(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
 
@@ -134,6 +137,26 @@ function buscarUsuarios(busqueda, regex) {
 
 
     });
+}
+
+    function searchArticles(busqueda, regex) {
+
+        return new Promise((resolve, reject) => {
+    
+            Article.find({}, 'Name Description PartNumber SerialNumber Status')
+                .exec((err, articles) => {
+    
+                    if (err) {
+                        reject('Error al cargar articulos', err);
+                    } else {
+                        resolve(articles);
+                    }
+    
+    
+                })
+    
+    
+        });    
 }
 
 

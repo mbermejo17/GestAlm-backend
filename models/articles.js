@@ -5,6 +5,7 @@ var articleSchema = new Schema({
     Name: { type: String, required: [true, 'El nombre es necesario'] },
     Description: { type: String, required: false },
     PartNumber: { type: String, required: false },
+    SerialNumber: { type: String, required: false },
     Barcode: { type: String, required: false },
     QRCode: { type: String, required: false },
     Location: { type: String, required: false },

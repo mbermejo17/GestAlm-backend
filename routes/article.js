@@ -75,6 +75,7 @@ app.put('/:id', (req, res) => {
         if (body.name) article.Name = body.name;
         if (body.description) article.Description = body.description;
         if (body.partnumber) article.ParNumber = body.partnumber;
+        if (body.serialnumber) article.SerialNumber = body.serialnumber;
         if (body.barcode) article.Barcode = body.barcode;
         if (body.qrcode) article.QRCode = body.qrcode;
         if (body.location) article.Location = body.location;
@@ -116,7 +117,8 @@ app.post('/', (req, res) => {
     var article = new Article({
         Name: body.name,
         Description: body.description,
-        ParNumber: body.partnumber,
+        PartNumber: body.partnumber || "",
+        SerialNumber: body.serialnumber || "",
         Barcode: body.barcode || "",
         QRCode: body.qrcode || "",
         Location: body.location || "",
