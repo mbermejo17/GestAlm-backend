@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 
 // Importar rutas
 var appRoutes = require('./routes/app');
-var usuarioRoutes = require('./routes/usuario');
+var usuarioRoutes = require('./routes/user');
 var loginRoutes = require('./routes/login');
 var hospitalRoutes = require('./routes/hospital');
 var medicoRoutes = require('./routes/medico');
@@ -36,7 +36,7 @@ var articlesRoutes = require('./routes/article');
 
 
 // Conexión a la base de datos
-mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
+mongoose.connection.openUri('mongodb://localhost:27017/GestAlm', (err, res) => {
 
     if (err) throw err;
 
@@ -52,7 +52,7 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) =
 
 
 // Rutas
-app.use('/usuario', usuarioRoutes);
+app.use('/user', usuarioRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/medico', medicoRoutes);
 app.use('/login', loginRoutes);

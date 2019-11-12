@@ -6,7 +6,7 @@ var jwt = require('jsonwebtoken');
 var SEED = require('../config/config').SEED;
 
 var app = express();
-var Usuario = require('../models/usuario');
+var User = require('../models/users');
 
 
 // Google
@@ -68,7 +68,7 @@ app.post('/google', async(req, res) => {
         });
 
 
-    Usuario.findOne({ email: googleUser.email }, (err, usuarioDB) => {
+    User.findOne({ email: googleUser.email }, (err, userDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -78,44 +78,44 @@ app.post('/google', async(req, res) => {
             });
         }
 
-        if (usuarioDB) {
+        if (userDB) {
 
-            if (usuarioDB.google === false) {
+            if (userDB.google === false) {
                 return res.status(400).json({
                     ok: false,
                     mensaje: 'Debe de usar su autenticación normal'
                 });
             } else {
-                var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 horas
+                var token = jwt.sign({ usuario: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
 
                 res.status(200).json({
                     ok: true,
-                    usuario: usuarioDB,
+                    usuario: userDB,
                     token: token,
-                    id: usuarioDB._id
+                    id: userDB._id
                 });
             }
 
         } else {
             // El usuario no existe... hay que crearlo
-            var usuario = new Usuario();
+            var user = new User();
 
-            usuario.nombre = googleUser.nombre;
-            usuario.email = googleUser.email;
-            usuario.img = googleUser.img;
-            usuario.google = true;
-            usuario.password = ':)';
+            user.nombre = googleUser.nombre;
+            user.email = googleUser.email;
+            user.img = googleUser.img;
+            user.google = true;
+            user.password = ':)';
 
 
-            usuario.save((err, usuarioDB) => {
+            user.save((err, userDB) => {
 
-                var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 horas
+                var token = jwt.sign({ usuario: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
 
                 res.status(200).json({
                     ok: true,
-                    usuario: usuarioDB,
+                    usuario: userDB,
                     token: token,
-                    id: usuarioDB._id
+                    id: userDB._id
                 });
 
             });
@@ -144,7 +144,7 @@ app.post('/', (req, res) => {
 
     var body = req.body;
 
-    Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
+    User.findOne({ email: body.email }, (err, userDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -154,7 +154,7 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!usuarioDB) {
+        if (!userDB) {
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Credenciales incorrectas - email',
@@ -162,7 +162,7 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+        if (!bcrypt.compareSync(body.password, userDB.password)) {
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Credenciales incorrectas - password',
@@ -171,16 +171,16 @@ app.post('/', (req, res) => {
         }
 
         // Crear un token!!!
-        usuarioDB.password = ':)';
+        userDB.password = ':)';
 
-        var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 horas
+        var token = jwt.sign({ usuario: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
 
         res.status(200).json({
             ok: true,
-            usuario: usuarioDB,
+            usuario: userDB,
             token: token,
-            id: usuarioDB._id,
-            menu: obtenerMenu(usuarioDB.role)
+            id: userDB._id,
+            menu: obtenerMenu(userDB.role)
         });
 
     })
@@ -198,18 +198,18 @@ function obtenerMenu(ROLE) {
             submenu: [
                 { titulo: 'Dashboard', url: '/dashboard' },
                 { titulo: 'ProgressBar', url: '/progress' },
-                { titulo: 'Gráficas', url: '/graficas1' },
-                { titulo: 'Promesas', url: '/promesas' },
-                { titulo: 'RxJs', url: '/rxjs' }
+                { titulo: 'Gráficas', url: '/graficas1' }
             ]
         },
         {
-            titulo: 'Mantenimientos',
+            titulo: 'Almacenes',
             icono: 'mdi mdi-folder-lock-open',
             submenu: [
-                // { titulo: 'Usuarios', url: '/usuarios' },
-                { titulo: 'Hospitales', url: '/hospitales' },
-                { titulo: 'Médicos', url: '/medicos' }
+                { titulo: 'Altas', url: '/hospitales' },
+                { titulo: 'Bajas', url: '/medicos' },
+                { titulo: 'Entradas', url: '/medicos' },
+                { titulo: 'Salidas', url: '/medicos' },
+                { titulo: 'Historico', url: '/medicos' }
             ]
         }
     ];
@@ -217,7 +217,7 @@ function obtenerMenu(ROLE) {
     console.log('ROLE', ROLE);
 
     if (ROLE === 'ADMIN_ROLE') {
-        menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });
+        menu[0].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });
     }
 
 

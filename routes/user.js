@@ -6,21 +6,21 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
-var Usuario = require('../models/usuario');
+var User = require('../models/users');
 
 // ==========================================
 // Obtener todos los usuarios
 // ==========================================
 app.get('/', (req, res, next) => {
 
-    var desde = req.query.desde || 0;
-    desde = Number(desde);
+    var from = req.query.desde || 0;
+    from = Number(from);
 
-    Usuario.find({}, 'nombre email img role google')
-        .skip(desde)
+    User.find({}, 'nombre email img role google')
+        .skip(from)
         .limit(5)
         .exec(
-            (err, usuarios) => {
+            (err, users) => {
 
                 if (err) {
                     return res.status(500).json({
@@ -30,18 +30,15 @@ app.get('/', (req, res, next) => {
                     });
                 }
 
-                Usuario.count({}, (err, conteo) => {
+                User.count({}, (err, counter) => {
 
                     res.status(200).json({
                         ok: true,
-                        usuarios: usuarios,
-                        total: conteo
+                        usuarios: users,
+                        total: counter
                     });
 
                 })
-
-
-
 
             });
 });
@@ -52,10 +49,12 @@ app.get('/', (req, res, next) => {
 // ==========================================
 app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res) => {
 
+//app.put('/:id', (req, res) => {    
+
     var id = req.params.id;
     var body = req.body;
 
-    Usuario.findById(id, (err, usuario) => {
+    User.findById(id, (err, user) => {
 
 
         if (err) {
@@ -66,7 +65,7 @@ app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_
             });
         }
 
-        if (!usuario) {
+        if (!user) {
             return res.status(400).json({
                 ok: false,
                 mensaje: 'El usuario con el id ' + id + ' no existe',
@@ -75,11 +74,11 @@ app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_
         }
 
 
-        usuario.nombre = body.nombre;
-        usuario.email = body.email;
-        usuario.role = body.role;
+        user.nombre = body.nombre;
+        user.email = body.email;
+        user.role = body.role;
 
-        usuario.save((err, usuarioGuardado) => {
+        user.save((err, userUpdated) => {
 
             if (err) {
                 return res.status(400).json({
@@ -89,11 +88,11 @@ app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_
                 });
             }
 
-            usuarioGuardado.password = ':)';
+            userUpdated.password = ':)';
 
             res.status(200).json({
                 ok: true,
-                usuario: usuarioGuardado
+                usuario: userUpdated
             });
 
         });
@@ -111,7 +110,7 @@ app.post('/', (req, res) => {
 
     var body = req.body;
 
-    var usuario = new Usuario({
+    var user = new User({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
@@ -119,7 +118,7 @@ app.post('/', (req, res) => {
         role: body.role
     });
 
-    usuario.save((err, usuarioGuardado) => {
+    user.save((err, userAdded) => {
 
         if (err) {
             return res.status(400).json({
@@ -131,7 +130,7 @@ app.post('/', (req, res) => {
 
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado,
+            usuario: userAdded,
             usuariotoken: req.usuario
         });
 
@@ -145,10 +144,11 @@ app.post('/', (req, res) => {
 //   Borrar un usuario por el id
 // ============================================
 app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
+    //app.delete('/:id', (req, res) => {    
 
     var id = req.params.id;
 
-    Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
+    User.findByIdAndRemove(id, (err, userDeleted) => {
 
         if (err) {
             return res.status(500).json({
@@ -158,7 +158,7 @@ app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN
             });
         }
 
-        if (!usuarioBorrado) {
+        if (!userDeleted) {
             return res.status(400).json({
                 ok: false,
                 mensaje: 'No existe un usuario con ese id',
@@ -168,7 +168,7 @@ app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN
 
         res.status(200).json({
             ok: true,
-            usuario: usuarioBorrado
+            usuario: userDeleted
         });
 
     });
