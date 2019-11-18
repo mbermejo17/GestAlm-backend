@@ -5,7 +5,7 @@ var app = express();
 var Hospital = require('../models/hospital');
 var Medico = require('../models/medico');
 var Article = require('../models/articles');
-var Usuario = require('../models/usuario');
+var User = require('../models/users');
 
 // ==============================
 // Busqueda por colección
@@ -15,13 +15,15 @@ app.get('/collection/:table/:busqueda', (req, res) => {
     var busqueda = req.params.busqueda;
     var table = req.params.table;
     var regex = new RegExp(busqueda, 'i');
+    var dataName = table;
 
     var promesa;
 
     switch (table) {
 
-        case 'usuarios':
-            promesa = buscarUsuarios(busqueda, regex);
+        case 'users':
+            dataName = "usuarios";
+            promesa = searchUsers(busqueda, regex);
             break;
 
         case 'medicos':
@@ -49,7 +51,7 @@ app.get('/collection/:table/:busqueda', (req, res) => {
 
         res.status(200).json({
             ok: true,
-            [table]: data
+            [dataName]: data
         });
 
     })
@@ -69,7 +71,7 @@ app.get('/all/:busqueda', (req, res, next) => {
     Promise.all([
         //buscarHospitales(busqueda, regex),
         //buscarMedicos(busqueda, regex),
-        searchUsuarios(busqueda, regex),
+        searchUsers(busqueda, regex),
         searchArticles(busqueda, regex)
     ])
         .then(respuestas => {
@@ -122,11 +124,11 @@ app.get('/all/:busqueda', (req, res, next) => {
     });
 }
  */
-function searchUsuarios(busqueda, regex) {
+function searchUsers(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
 
-        Usuario.find({}, 'nombre email role img')
+        User.find({}, 'nombre email role img')
             .or([{ 'nombre': regex }, { 'email': regex }])
             .exec((err, usuarios) => {
 

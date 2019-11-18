@@ -32,6 +32,8 @@ var busquedaRoutes = require('./routes/busqueda');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
 var articlesRoutes = require('./routes/article');
+var printRoutes = require('./routes/print');
+var modelRoutes = require('./routes/model');
 
 
 
@@ -60,6 +62,9 @@ app.use('/search', busquedaRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/img', imagenesRoutes);
 app.use('/article', articlesRoutes);
+app.use('/print',printRoutes);
+app.use('/model', modelRoutes);
+
 
 app.use('/', appRoutes);
 
