@@ -15,7 +15,7 @@ var articleSchema = new Schema({
     Images: { type: String, required: false },
     Manufacturer: { type: String, required: false },
     Comment: { type: String, required: false },
-    LastUpdated: { type: Date, required: false },
+    LastUpdate: { type: Date, required: false },
     LastMovement: { type: String, required: false },
     LastOrigin: { type: String, required: false },
     LastDestination: { type: String, required: false }

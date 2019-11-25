@@ -14,10 +14,12 @@ var User = require('../models/users');
 app.get('/', (req, res, next) => {
 
     var from = req.query.desde || 0;
+    var limit = req.query.limite || 5;
     from = Number(from);
+    limit = Number(limit);
 
     User.find({}, 'nombre email img role google')
-        .skip(from)
+        .skip(limit)
         .limit(5)
         .exec(
             (err, users) => {
@@ -49,7 +51,7 @@ app.get('/', (req, res, next) => {
 // ==========================================
 app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res) => {
 
-//app.put('/:id', (req, res) => {    
+    //app.put('/:id', (req, res) => {    
 
     var id = req.params.id;
     var body = req.body;
