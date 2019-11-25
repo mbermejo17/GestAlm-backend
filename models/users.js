@@ -18,7 +18,7 @@ var usersSchema = new Schema({
     img: { type: String, required: false },
     role: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidos },
     google: { type: Boolean, required: true, default: false }
-}, { collection: 'users' });
+}, { collection: 'Users' });
 
 usersSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 

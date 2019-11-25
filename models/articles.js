@@ -19,6 +19,6 @@ var articleSchema = new Schema({
     LastMovement: { type: String, required: false },
     LastOrigin: { type: String, required: false },
     LastDestination: { type: String, required: false }
-}, { collection: 'articles' });
+}, { collection: 'Articles' });
 
 module.exports = mongoose.model('Article', articleSchema);
