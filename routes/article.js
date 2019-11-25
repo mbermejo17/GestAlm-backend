@@ -16,7 +16,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Article.find({},'Name Description PartNumber Barcode QRCode Location Status ScanPending EditPending Images Manufacturer Comment LastUpdate')
+    Article.find({},'Name Description PartNumber Barcode QRCode Location Status ScanPending EditPending Images Manufacturer Comment LastUpdate LastMovement LastOrigin LastDestination')
         .skip(desde)
         .limit(5)
         .exec(
