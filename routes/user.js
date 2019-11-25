@@ -40,7 +40,7 @@ app.get('/', (req, res, next) => {
                         total: counter
                     });
 
-                })
+                });
 
             });
 });
