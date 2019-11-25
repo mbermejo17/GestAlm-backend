@@ -6,10 +6,10 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
-const ThermalPrinter = require("../node-thermal-printer").printer;
-const PrinterTypes = require("../node-thermal-printer").types;
+//const ThermalPrinter = require("../node-thermal-printer").printer;
+//const PrinterTypes = require("../node-thermal-printer").types;
 
-var printerDevice = new Printer('EPSON_SX510');
+//var printerDevice = new Printer('EPSON_SX510');
 
 // =============================================
 // Obtener trabajos en la cola de la impresora

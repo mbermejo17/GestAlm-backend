@@ -12,7 +12,10 @@ var articleSchema = new Schema({
     Status: { type: String, required: false },
     ScanPending: { type: Boolean, required: false },
     EditPending: { type: Boolean, required: false },
-    Images: { type: String, required: false }
-}, { collection: 'Articles' });
+    Images: { type: String, required: false },
+    Manufacturer: { type: String, required: false },
+    Comment: { type: String, required: false },
+    LastUpdated: { type: Date, required: false }
+}, { collection: 'articles' });
 
 module.exports = mongoose.model('Article', articleSchema);
