@@ -180,5 +180,41 @@ app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN
 
 });
 
+// ============================================
+//   Buscar un usuario por el id
+// ============================================
+// app.get('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
+app.get('/:id', (req, res) => {
+    //app.delete('/:id', (req, res) => {    
+
+    var id = req.params.id;
+
+    User.findById(id, (err, user) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error buscando usuario',
+                errors: err
+            });
+        }
+
+        if (!user) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No existe un usuario con ese id',
+                errors: { message: 'No existe un usuario con ese id' }
+            });
+        }
+
+        res.status(200).json({
+            ok: true,
+            usuario: user
+        });
+
+    });
+
+});
+
 
 module.exports = app;

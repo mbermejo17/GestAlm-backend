@@ -186,4 +186,40 @@ app.delete('/:id', (req, res) => {
 });
 
 
+// ============================================
+//   Buscar un articulo por el id
+// ============================================
+// app.get('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
+app.get('/:id', (req, res) => {
+    //app.delete('/:id', (req, res) => {    
+
+    var id = req.params.id;
+
+    Article.findById(id, (err, article) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error buscando articulo',
+                errors: err
+            });
+        }
+
+        if (!article) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No existe un articulo con ese id',
+                errors: { message: 'No existe un articulo con ese id' }
+            });
+        }
+
+        res.status(200).json({
+            ok: true,
+            articulo: article
+        });
+
+    });
+
+});
+
 module.exports = app;
