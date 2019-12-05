@@ -8,6 +8,8 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Article = require('../models/articles');
+var Model = require('../models/model');
+
 
 // ==========================================
 // Obtener todos los articulos
@@ -43,6 +45,8 @@ app.get('/', (req, res, next) => {
                 });
             });
 });
+
+
 
 
 // ==========================================

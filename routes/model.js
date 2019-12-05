@@ -7,6 +7,10 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Model = require('../models/model');
+var Article = require('../models/articles');
+var tArtByModel = [];
+
+
 
 // ==========================================
 // Obtener todos los modelos
@@ -42,138 +46,205 @@ app.get('/', (req, res, next) => {
             });
 });
 
-
-// ==========================================
-// Actualizar Modelo
-// ==========================================
-//app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res) => {
-app.put('/:id', (req, res) => {
-
-    var id = req.params.id;
-    var body = req.body;
-    console.log(id);
-    Model.findById(id, (err, model) => {
-
-
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al buscar modelo',
-                errors: err
+const getTotalArticulosByModel = (m) => {
+    Article.find({})
+        .limit(900)
+        .where('PartNumber', m.Name)
+        .exec(
+            (err, articles) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error cargando articulos',
+                        errors: err
+                    });
+                }
+                return articles.length;
             });
         }
+   
 
-        if (!model) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'El modelo con el id ' + id + ' no existe',
-                errors: { message: 'No existe un modelo con ese ID' }
+
+    // ==========================================
+    // Obtener total de Articulos por modelo
+    // ==========================================
+
+    app.get('/total', (req, res, next) => {
+
+        var from = req.query.desde || 0;
+        var limit = req.query.limite || 100;
+        var listados = 0;
+        var totalModel = [];
+        from = Number(from);
+        limit = Number(limit);
+
+        Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
+            .skip(from)
+            .limit(limit)
+            .exec(
+                (err, models) => {
+                    if (err) {
+                        return res.status(500).json({
+                            ok: false,
+                            mensaje: 'Error cargando modelos',
+                            errors: err
+                        });
+                    }
+                    let totalModel = [];
+
+                    models.map((m) => {
+                        let newObj = {
+                            Name: m.Name,
+                            ParNumber: m.PartNumber,
+                            Total: 0
+                        };
+                        newObj.Total = getTotalArticulosByModel(m);
+                        totalModel.push(newObj);
+                        console.log(newObj);
+                    });
+                    res.status(200).json({
+                        ok: true,
+                        listados: totalModel.length,
+                        models: totalModel,
+                    });
+                });
+
+    });
+
+
+
+
+    // ==========================================
+    // Actualizar Modelo
+    // ==========================================
+    //app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res) => {
+    app.put('/:id', (req, res) => {
+
+        var id = req.params.id;
+        var body = req.body;
+        console.log(id);
+        Model.findById(id, (err, model) => {
+
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar modelo',
+                    errors: err
+                });
+            }
+
+            if (!model) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'El modelo con el id ' + id + ' no existe',
+                    errors: { message: 'No existe un modelo con ese ID' }
+                });
+            }
+
+
+            if (body.name) model.Name = body.name;
+            if (body.description) model.Description = body.description;
+            if (body.barcode) model.Barcode = body.barcode;
+            if (body.qrcode) model.QRCode = body.qrcode;
+            if (body.scanpending) model.ScanPending = body.scanpending;
+            if (body.editpending) model.EditPending = body.editpending;
+            if (body.images) model.Images = body.images;
+
+            model.save((err, modelUpdated) => {
+
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        mensaje: 'Error al actualizar el modelo',
+                        errors: err
+                    });
+                }
+
+                res.status(200).json({
+                    ok: true,
+                    model: modelUpdated
+                });
+
             });
-        }
+
+        });
+
+    });
 
 
-        if (body.name) model.Name = body.name;
-        if (body.description) model.Description = body.description;
-        if (body.barcode) model.Barcode = body.barcode;
-        if (body.qrcode) model.QRCode = body.qrcode;
-        if (body.scanpending) model.ScanPending = body.scanpending;
-        if (body.editpending) model.EditPending = body.editpending;
-        if (body.images) model.Images = body.images;
 
-        model.save((err, modelUpdated) => {
+    // ==========================================
+    // Crear un nuevo Modelo
+    // ==========================================
+    app.post('/', (req, res) => {
+
+        var body = req.body;
+
+        var model = new Model({
+            Name: body.name,
+            Description: body.description,
+            Barcode: body.barcode || "",
+            QRCode: body.qrcode || "",
+            ScanPending: body.scanpending || "",
+            EditPending: body.editpending || "",
+            Images: body.images || ""
+        });
+
+        model.save((err, modelAdded) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar el modelo',
+                    mensaje: 'Error al crear modelo',
                     errors: err
+                });
+            }
+
+            res.status(201).json({
+                ok: true,
+                model: modelAdded,
+                usuariotoken: req.usuario
+            });
+
+        });
+
+    });
+
+
+    // ============================================
+    //   Borrar un modelo por el id
+    // ============================================
+    //app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
+    app.delete('/:id', (req, res) => {
+        var id = req.params.id;
+
+        Model.findByIdAndRemove(id, (err, modelDeleted) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al borrar modelo',
+                    errors: err
+                });
+            }
+
+            if (!modelDeleted) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'No existe un articulo con ese id',
+                    errors: { message: 'No existe un articulo con ese id' }
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                model: modelUpdated
+                model: modelDeleted
             });
 
         });
 
     });
 
-});
 
-
-
-// ==========================================
-// Crear un nuevo Modelo
-// ==========================================
-app.post('/', (req, res) => {
-
-    var body = req.body;
-
-    var model = new Model({
-        Name: body.name,
-        Description: body.description,
-        Barcode: body.barcode || "",
-        QRCode: body.qrcode || "",
-        ScanPending: body.scanpending || "",
-        EditPending: body.editpending || "",
-        Images: body.images || ""
-    });
-
-    model.save((err, modelAdded) => {
-
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Error al crear modelo',
-                errors: err
-            });
-        }
-
-        res.status(201).json({
-            ok: true,
-            model: modelAdded,
-            usuariotoken: req.usuario
-        });
-
-    });
-
-});
-
-
-// ============================================
-//   Borrar un modelo por el id
-// ============================================
-//app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
-app.delete('/:id', (req, res) => {
-    var id = req.params.id;
-
-    Model.findByIdAndRemove(id, (err, modelDeleted) => {
-
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al borrar modelo',
-                errors: err
-            });
-        }
-
-        if (!modelDeleted) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'No existe un articulo con ese id',
-                errors: { message: 'No existe un articulo con ese id' }
-            });
-        }
-
-        res.status(200).json({
-            ok: true,
-            model: modelDeleted
-        });
-
-    });
-
-});
-
-
-module.exports = app;
+    module.exports = app;
