@@ -23,6 +23,7 @@ app.get('/', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(desde)
         .limit(5)
+        .sort(['PartNumber', 1])
         .exec(
             (err, models) => {
 
@@ -112,6 +113,7 @@ app.get('/total', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(from)
         .limit(limit)
+        .sort([['Name',1]])
         .exec(
             (err, models) => {
                 if (err) {
