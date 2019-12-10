@@ -52,13 +52,13 @@ const getTotalArticulosByModel = (m) => {
             .count(
                 (err, nArticles) => {
                     if (err) {
-                        reject('Error cargando articulos')
-                    };
+                        reject('Error cargando articulos');
+                    }
                     console.log('Name: ' + m.Name + ', total: ' + nArticles);
                     resolve(nArticles);
                 });
     });
-}
+};
 
 
 // ============================================
@@ -122,8 +122,8 @@ app.get('/total', (req, res, next) => {
                     });
                 }
                 let totalModel = [];
-                let parseModels = async () => {
-                    return Promise.all(models.map(async (m) => {
+                let parseModels = async() => {
+                    return Promise.all(models.map(async(m) => {
                         let newObj = {
                             Name: m.Name,
                             ParNumber: m.PartNumber,
@@ -135,11 +135,9 @@ app.get('/total', (req, res, next) => {
                                 newObj.Total = n;
                                 //console.log(newObj.Total);
                                 totalModel.push(newObj);
-                            }
-                            )
+                            })
                             .catch((e) => console.log(e));
-                    })
-                    );
+                    }));
                 };
 
                 parseModels()
@@ -150,7 +148,7 @@ app.get('/total', (req, res, next) => {
                             listados: totalModel.length,
                             models: totalModel,
                         });
-                    })
+                    });
 
             });
 
