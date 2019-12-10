@@ -23,6 +23,9 @@ app.get('/', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(desde)
         .limit(5)
+        .sort([
+            ['Name', 1]
+        ])
         .exec(
             (err, models) => {
 
@@ -68,6 +71,9 @@ app.get('/articles/:id', (req, res) => {
     var id = req.params.id;
     console.log(id);
     Article.find({ "PartNumber": id })
+        .sort([
+            ['Name', 1]
+        ])
         .exec((err, articles) => {
             if (err) {
                 return res.status(500).json({
