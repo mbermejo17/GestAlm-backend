@@ -23,13 +23,9 @@ app.get('/', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(desde)
         .limit(5)
-<<<<<<< HEAD
-        .sort(['PartNumber', 1])
-=======
         .sort([
             ['Name', 1]
         ])
->>>>>>> 72c24ff20eb6f8471847214e2c56abdd348433d3
         .exec(
             (err, models) => {
 
@@ -122,7 +118,7 @@ app.get('/total', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(from)
         .limit(limit)
-        .sort([['Name',1]])
+        .sort([['Name', 1]])
         .exec(
             (err, models) => {
                 if (err) {
@@ -133,8 +129,8 @@ app.get('/total', (req, res, next) => {
                     });
                 }
                 let totalModel = [];
-                let parseModels = async() => {
-                    return Promise.all(models.map(async(m) => {
+                let parseModels = async () => {
+                    return Promise.all(models.map(async (m) => {
                         let newObj = {
                             Name: m.Name,
                             ParNumber: m.PartNumber,
