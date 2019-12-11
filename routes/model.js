@@ -23,7 +23,13 @@ app.get('/', (req, res, next) => {
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(desde)
         .limit(5)
+<<<<<<< HEAD
         .sort(['PartNumber', 1])
+=======
+        .sort([
+            ['Name', 1]
+        ])
+>>>>>>> 72c24ff20eb6f8471847214e2c56abdd348433d3
         .exec(
             (err, models) => {
 
@@ -53,13 +59,13 @@ const getTotalArticulosByModel = (m) => {
             .count(
                 (err, nArticles) => {
                     if (err) {
-                        reject('Error cargando articulos')
-                    };
+                        reject('Error cargando articulos');
+                    }
                     console.log('Name: ' + m.Name + ', total: ' + nArticles);
                     resolve(nArticles);
                 });
     });
-}
+};
 
 
 // ============================================
@@ -69,6 +75,9 @@ app.get('/articles/:id', (req, res) => {
     var id = req.params.id;
     console.log(id);
     Article.find({ "PartNumber": id })
+        .sort([
+            ['Name', 1]
+        ])
         .exec((err, articles) => {
             if (err) {
                 return res.status(500).json({
@@ -124,8 +133,8 @@ app.get('/total', (req, res, next) => {
                     });
                 }
                 let totalModel = [];
-                let parseModels = async () => {
-                    return Promise.all(models.map(async (m) => {
+                let parseModels = async() => {
+                    return Promise.all(models.map(async(m) => {
                         let newObj = {
                             Name: m.Name,
                             ParNumber: m.PartNumber,
@@ -137,11 +146,9 @@ app.get('/total', (req, res, next) => {
                                 newObj.Total = n;
                                 //console.log(newObj.Total);
                                 totalModel.push(newObj);
-                            }
-                            )
+                            })
                             .catch((e) => console.log(e));
-                    })
-                    );
+                    }));
                 };
 
                 parseModels()
@@ -152,7 +159,7 @@ app.get('/total', (req, res, next) => {
                             listados: totalModel.length,
                             models: totalModel,
                         });
-                    })
+                    });
 
             });
 
