@@ -18,11 +18,12 @@ var tArtByModel = [];
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
+    var limit = req.query.limite || 10;
     desde = Number(desde);
 
     Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
         .skip(desde)
-        .limit(5)
+        .limit(limit)
         .sort([
             ['Name', 1]
         ])
@@ -51,7 +52,7 @@ app.get('/', (req, res, next) => {
 
 const getTotalArticulosByModel = (m) => {
     return new Promise((resolve, reject) => {
-        Article.find({ "PartNumber": m.Name })
+        Article.find({$or:[{'PartNumber': m.Name},{'Name': m.Name}] })
             .count(
                 (err, nArticles) => {
                     if (err) {
