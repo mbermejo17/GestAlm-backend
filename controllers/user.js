@@ -1,4 +1,3 @@
-'use stric'
 
 var bcrypt = require('bcryptjs');
 var User = require('../models/users');
@@ -48,9 +47,6 @@ var getAllUsers = (req,res)=>{
 // Actualizar usuario
 // ==========================================
 var updateUser = (req,res)=>{
-// app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res) => {
-
-    //app.put('/:id', (req, res) => {    
 
     var id = req.params.id;
     var body = req.body;
@@ -108,7 +104,6 @@ var updateUser = (req,res)=>{
 // Crear un nuevo usuario
 // ==========================================
 var addUser = (req,res)=> {
-// app.post('/', (req, res) => {
 
     var body = req.body;
 
@@ -146,8 +141,6 @@ var addUser = (req,res)=> {
 //   Borrar un usuario por el id
 // ============================================
 var deleteUser = (req,res)=>{
-// app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
-    //app.delete('/:id', (req, res) => {    
 
     var id = req.params.id;
 
@@ -181,10 +174,7 @@ var deleteUser = (req,res)=>{
 // ============================================
 //   Buscar un usuario por el id
 // ============================================
-// app.get('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE], (req, res) => {
 var findUserById = (req,res) =>{    
-// app.get('/:id', (req, res) => {
-    //app.delete('/:id', (req, res) => {    
 
     var id = req.params.id;
 
@@ -214,7 +204,6 @@ var findUserById = (req,res) =>{
     });
 
 };
-
 
 module.exports = {
     addUser,

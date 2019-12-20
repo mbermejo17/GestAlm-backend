@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 // Importar rutas
 
 var userApi = require('./routes/user');
-var loginRoutes = require('./routes/login');
+var loginApi = require('./routes/login');
 var hospitalRoutes = require('./routes/hospital');
 var medicoRoutes = require('./routes/medico');
 var busquedaRoutes = require('./routes/busqueda');
@@ -47,7 +47,7 @@ var modelRoutes = require('./routes/model');
 app.use('/user', userApi);
 app.use('/hospital', hospitalRoutes);
 app.use('/medico', medicoRoutes);
-app.use('/login', loginRoutes);
+app.use('/login', loginApi);
 app.use('/search', busquedaRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/img', imagenesRoutes);
