@@ -34,6 +34,7 @@ var getAllUsers = (req,res)=>{
                     res.status(200).json({
                         ok: true,
                         usuarios: users,
+                        listados: users.length,
                         total: counter
                     });
 
