@@ -144,6 +144,41 @@ app.get('/location/:id', (req, res, next) => {
             });
 });
 
+
+app.get('/contains/:id', (req, res, next) => {
+
+    var id = req.params.id;
+    var from = req.query.desde || 0;
+    var limit = req.query.limite || 0;
+    var listados = 0;
+    from = Number(from);
+    limit = Number(limit);
+    console.log(id);
+
+    Article.find({$or: [{PartNumber: id},{SerialNumber: id},{Description: id},{Name: id}]}, 'Name Description PartNumber Barcode QRCode Location Status ScanPending EditPending Images Manufacturer Comment LastUpdate LastMovement LastOrigin LastDestination')
+        .skip(from)
+        .limit(limit)
+        .exec(
+            (err, articles) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error cargando articulos',
+                        errors: err
+                    });
+                }
+                Article.count({Location: id}, (err, conteo) => {
+                    res.status(200).json({
+                        ok: true,
+                        listados: articles.length,
+                        total: conteo,
+                        articles
+                    });
+
+                });
+            });
+});
+
 // ==========================================
 // Crear un nuevo Articulo
 // ==========================================
