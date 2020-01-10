@@ -114,7 +114,7 @@ app.get('/location/:id', (req, res, next) => {
 
     var id = req.params.id;
     var from = req.query.desde || 0;
-    var limit = req.query.limite || 5;
+    var limit = req.query.limite || 0;
     var listados = 0;
     from = Number(from);
     limit = Number(limit);
