@@ -117,6 +117,42 @@ app.get('/articles/:id', (req, res) => {
 });
 
 
+app.get('/articles/:id/location/:loc', (req, res) => {
+    var id = req.params.id;
+    var loc = req.params.loc;
+    console.log(id);
+    Article.find({ PartNumber: id, Location: loc })
+        .sort([
+            ['Name', 1]
+        ])
+        .exec((err, articles) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar articulos por modelo',
+                    errors: err
+                });
+            }
+            if (!articles) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'No existe un articulos del modelo' + id,
+                    errors: { message: 'No existen articulo del modelo ' + id }
+                });
+            }
+            Article.count({ "PartNumber": id }, (err, conteo) => {
+                res.status(200).json({
+                    ok: true,
+                    listados: articles.length,
+                    total: conteo,
+                    articles
+                });
+            });
+        });
+
+});
+
+
 // ==========================================
 // Obtener total de Articulos por modelo
 // ==========================================
