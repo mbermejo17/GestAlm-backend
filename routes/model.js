@@ -177,60 +177,31 @@ app.get('/total', (req, res, next) => {
 });
 
 app.get('/location/:id', (req, res, next) => {
-    var id = req.params.id;
+    var id = req.params.id.toUpperCase();
     var from = req.query.desde || 0;
     var limit = req.query.limite || 0;
     var listados = 0;
-    var totalModel = [];
     from = Number(from);
     limit = Number(limit);
-
-    Model.find({}, 'Name Description PartNumber Barcode QRCode ScanPending EditPending Images')
-        .skip(from)
-        .limit(limit)
-        .sort([['Name', 1]])
-        .exec(
-            (err, models) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: 'Error cargando modelos',
-                        errors: err
-                    });
-                }
-                let totalModel = [];
-                let parseModels = async () => {
-                    return Promise.all(models.map(async (m) => {
-                        let newObj = {
-                            Name: m.Name,
-                            ParNumber: m.PartNumber,
-                            _id: m._id,
-                            Total: 0
-                        };
-                        await getTotalArticulosByModelFilter(m,id)
-                            .then((n) => {
-                                newObj.Total = n;
-                                console.log(newObj.Total);
-                                if (newObj.Total >0) {
-                                    totalModel.push(newObj);
-                                }   
-                            })
-                            .catch((e) => console.log(e));
-                    }));
-                };
-
-                parseModels()
-                    .then(() => {
-                        //console.log("======================",totalModel);
-                        res.status(200).json({
-                            ok: true,
-                            listados: totalModel.length,
-                            models: totalModel,
-                        });
-                    });
-
-            });
-
+    console.log('GET /model/location/'+id);
+       Article.aggregate([
+           { $match: { Location: id}},
+           { $group: { _id: { 
+               Name: '$Name',
+               Description: '$Description',
+               PartNumber: '$PartNumber',
+               Location: '$Location',
+               Manufacturer: '$Manufacturer'
+            }, count: {$sum:1}}}
+       ])
+       .then((articles)=> {
+           console.log(articles);
+           res.status(200).json({
+            ok: true,
+            listados: articles.length,
+            articles
+        });
+       });     
 });
 
 
