@@ -23,6 +23,7 @@ var getAllUsers = (req,res)=>{
 
                 if (err) {
                     return res.status(500).json({
+                        result: 'error',
                         ok: false,
                         mensaje: 'Error cargando usuario',
                         errors: err
@@ -32,6 +33,7 @@ var getAllUsers = (req,res)=>{
                 User.count({}, (err, counter) => {
 
                     res.status(200).json({
+                        result: 'ok',
                         ok: true,
                         usuarios: users,
                         listados: users.length,
@@ -57,6 +59,7 @@ var updateUser = (req,res)=>{
 
         if (err) {
             return res.status(500).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'Error al buscar usuario',
                 errors: err
@@ -65,6 +68,7 @@ var updateUser = (req,res)=>{
 
         if (!user) {
             return res.status(400).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'El usuario con el id ' + id + ' no existe',
                 errors: { message: 'No existe un usuario con ese ID' }
@@ -80,6 +84,7 @@ var updateUser = (req,res)=>{
 
             if (err) {
                 return res.status(400).json({
+                    result: 'eror',
                     ok: false,
                     mensaje: 'Error al actualizar usuario',
                     errors: err
@@ -89,8 +94,10 @@ var updateUser = (req,res)=>{
             userUpdated.password = ':)';
 
             res.status(200).json({
+                result: 'ok',
                 ok: true,
-                usuario: userUpdated
+                usuario: userUpdated,
+                mensaje: 'Usuario actualizado',
             });
 
         });
@@ -120,6 +127,7 @@ var addUser = (req,res)=> {
 
         if (err) {
             return res.status(400).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'Error al crear usuario',
                 errors: err
@@ -127,6 +135,7 @@ var addUser = (req,res)=> {
         }
 
         res.status(201).json({
+            result: 'ok',
             ok: true,
             usuario: userAdded,
             usuariotoken: req.usuario
@@ -149,6 +158,7 @@ var deleteUser = (req,res)=>{
 
         if (err) {
             return res.status(500).json({
+                result: 'error',
                 ok: false,
                 mensaje: 'Error borrar usuario',
                 errors: err
@@ -157,6 +167,7 @@ var deleteUser = (req,res)=>{
 
         if (!userDeleted) {
             return res.status(400).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'No existe un usuario con ese id',
                 errors: { message: 'No existe un usuario con ese id' }
@@ -164,8 +175,10 @@ var deleteUser = (req,res)=>{
         }
 
         res.status(200).json({
+            result: 'ok',
             ok: true,
-            usuario: userDeleted
+            usuario: userDeleted,
+            message: 'Usuario borrado'
         });
 
     });

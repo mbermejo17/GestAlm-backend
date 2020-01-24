@@ -18,6 +18,7 @@ var tokenRenew = (req, res) =>{
     var token = jwt.sign({ usuario: req.usuario }, SEED, { expiresIn: 14400 }); // 4 horas
 
     res.status(200).json({
+        result: 'ok',
         ok: true,
         token: token
     });
@@ -45,7 +46,7 @@ async function verify(token) {
         email: payload.email,
         img: payload.picture,
         google: true
-    }
+    };
 }
 
 
@@ -63,6 +64,7 @@ var userLogin = (req,res) =>{
 
         if (err) {
             return res.status(500).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'Error al buscar usuario',
                 errors: err
@@ -71,6 +73,7 @@ var userLogin = (req,res) =>{
 
         if (!userDB) {
             return res.status(400).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'Credenciales incorrectas - email',
                 errors: err
@@ -79,6 +82,7 @@ var userLogin = (req,res) =>{
 
         if (!bcrypt.compareSync(body.password, userDB.password)) {
             return res.status(400).json({
+                result: 'fail',
                 ok: false,
                 mensaje: 'Credenciales incorrectas - password',
                 errors: err
@@ -91,6 +95,7 @@ var userLogin = (req,res) =>{
         var token = jwt.sign({ usuario: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
 
         res.status(200).json({
+            result: 'ok',
             ok: true,
             usuario: userDB,
             token: token,

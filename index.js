@@ -11,7 +11,7 @@ mongoose.connect('mongodb://localhost:27017/GestAlm', { useMongoClient: true })
         console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 
         // Arrancar el servidor
-        app.listen(settings.PORT, () => {
+        app.listen(settings.PORT,'0.0.0.0', () => {
             console.log('Express server puerto '+ settings.PORT +': \x1b[32m%s\x1b[0m', 'online');
         });
         
