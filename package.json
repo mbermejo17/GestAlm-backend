@@ -22,7 +22,7 @@
         "google-auth-library": "^1.4.0",
         "jsonwebtoken": "^8.1.0",
         "mobile-detect": "^1.4.4",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "mongoose": "^4.13.5",
         "mongoose-unique-validator": "^1.0.6",
         "node-thermal-printer": "^4.1.0",
